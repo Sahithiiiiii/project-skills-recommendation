@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  skills    UserSkill[]
+  interests UserInterest[]
+}
+
+model Skill {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  category    String?
+  description String?
+
+  users             UserSkill[]
+  careerSkills      CareerSkill[]
+  prerequisites     SkillPrerequisite[] @relation("SkillPrerequisites")
+  requiredFor       SkillPrerequisite[] @relation("RequiredSkill")
+  projectRequired   ProjectRequiredSkill[]
+  projectTeaches    ProjectTeachesSkill[]
+}
+
+model UserSkill {
+  userId     String
+  skillId    String
+  confidence Int
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([userId, skillId])
+}
+
+model Interest {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+
+  users UserInterest[]
+}
+
+model UserInterest {
+  userId     String
+  interestId String
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, interestId])
+}
+
+model Career {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  category    String?
+
+  skills CareerSkill[]
+}
+
+model CareerSkill {
+  careerId   String
+  skillId    String
+  importance Int
+
+  career Career @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  skill  Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([careerId, skillId])
+}
+
+model SkillPrerequisite {
+  skillId            String
+  prerequisiteSkillId String
+
+  skill Skill @relation(
+    "SkillPrerequisites",
+    fields: [skillId],
+    references: [id],
+    onDelete: Cascade
+  )
+
+  prerequisite Skill @relation(
+    "RequiredSkill",
+    fields: [prerequisiteSkillId],
+    references: [id],
+    onDelete: Cascade
+  )
+
+  @@id([skillId, prerequisiteSkillId])
+}
+
+model Project {
+  id          String @id @default(uuid())
+  name        String @unique
+  description String?
+  difficulty  String?
+
+  requiredSkills ProjectRequiredSkill[]
+  teachesSkills  ProjectTeachesSkill[]
+}
+
+model ProjectRequiredSkill {
+  projectId String
+  skillId   String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill   Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, skillId])
+}
+
+model ProjectTeachesSkill {
+  projectId String
+  skillId   String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill   Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, skillId])
+}
