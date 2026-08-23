@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -25,12 +25,12 @@ model Skill {
   category    String?
   description String?
 
-  users             UserSkill[]
-  careerSkills      CareerSkill[]
-  prerequisites     SkillPrerequisite[] @relation("SkillPrerequisites")
-  requiredFor       SkillPrerequisite[] @relation("RequiredSkill")
-  projectRequired   ProjectRequiredSkill[]
-  projectTeaches    ProjectTeachesSkill[]
+  users           UserSkill[]
+  careerSkills    CareerSkill[]
+  prerequisites   SkillPrerequisite[] @relation("SkillPrerequisites")
+  requiredFor     SkillPrerequisite[] @relation("RequiredSkill")
+  projectRequired ProjectRequiredSkill[]
+  projectTeaches  ProjectTeachesSkill[]
 }
 
 model UserSkill {
@@ -45,8 +45,8 @@ model UserSkill {
 }
 
 model Interest {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
 
   users UserInterest[]
@@ -63,8 +63,8 @@ model UserInterest {
 }
 
 model Career {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
   category    String?
 
@@ -83,29 +83,18 @@ model CareerSkill {
 }
 
 model SkillPrerequisite {
-  skillId            String
+  skillId             String
   prerequisiteSkillId String
 
-  skill Skill @relation(
-    "SkillPrerequisites",
-    fields: [skillId],
-    references: [id],
-    onDelete: Cascade
-  )
-
-  prerequisite Skill @relation(
-    "RequiredSkill",
-    fields: [prerequisiteSkillId],
-    references: [id],
-    onDelete: Cascade
-  )
+  skill Skill @relation("SkillPrerequisites", fields: [skillId], references: [id], onDelete: Cascade)
+  prerequisite Skill @relation("RequiredSkill", fields: [prerequisiteSkillId], references: [id], onDelete: Cascade)
 
   @@id([skillId, prerequisiteSkillId])
 }
 
 model Project {
-  id          String @id @default(uuid())
-  name        String @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
   difficulty  String?
 
