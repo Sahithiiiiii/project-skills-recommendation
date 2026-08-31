@@ -49,12 +49,20 @@ export const getRecommendations = async (
           importance: careerSkill.importance,
         }));
 
-      const matchPercentage =
-        requiredSkills.length === 0
-          ? 0
-          : Math.round(
-              (matchedSkills.length / requiredSkills.length) * 100
-            );
+      const totalImportance = requiredSkills.reduce(
+  (total, careerSkill) => total + careerSkill.importance,
+  0
+);
+
+const matchedImportance = matchedSkills.reduce(
+  (total, careerSkill) => total + careerSkill.importance,
+  0
+);
+
+const matchPercentage =
+  totalImportance === 0
+    ? 0
+    : Math.round((matchedImportance / totalImportance) * 100);
 
       return {
         career: career.name,
