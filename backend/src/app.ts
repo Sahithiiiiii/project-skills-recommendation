@@ -2,6 +2,7 @@ import express from "express";
 import skillRoutes from "./routes/skill.routes.js";
 import careerRoutes from "./routes/career.routes.js";
 import recommendationRoutes from "./routes/recommendation.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 const app = express();
 
 app.use(express.json());
@@ -17,4 +18,5 @@ app.get("/", (req, res) => {
 app.use("/api/skills", skillRoutes);
 app.use("/api/careers", careerRoutes);
 app.use("/api/recommendations", recommendationRoutes);
+app.use("/api/auth", authRoutes);
 export default app;
