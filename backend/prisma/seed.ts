@@ -174,7 +174,9 @@ async function main() {
     ],
   };
 
-  for (const [careerName, requiredSkills] of Object.entries(careerSkills)) {
+  for (const [careerName, requiredSkills] of Object.entries(
+    careerSkills
+  )) {
     const career = await prisma.career.findUnique({
       where: {
         name: careerName,
@@ -210,58 +212,151 @@ async function main() {
       });
     }
   }
+
   // =========================
-// 4. SEED INTERESTS
-// =========================
+  // 4. SEED INTERESTS
+  // =========================
 
-const interests = [
-  {
-    name: "Web Development",
-    description:
-      "Building websites, web applications, and internet-based software.",
-  },
-  {
-    name: "Backend Development",
-    description:
-      "Building servers, APIs, databases, and application logic.",
-  },
-  {
-    name: "Frontend Development",
-    description:
-      "Building user interfaces and interactive web experiences.",
-  },
-  {
-    name: "Artificial Intelligence",
-    description:
-      "Building intelligent systems using machine learning and AI.",
-  },
-  {
-    name: "Data Science",
-    description:
-      "Analyzing data to discover insights and build data-driven solutions.",
-  },
-  {
-    name: "Problem Solving",
-    description:
-      "Solving logical and computational problems using algorithms.",
-  },
-];
+  const interests = [
+    {
+      name: "Web Development",
+      description:
+        "Building websites, web applications, and internet-based software.",
+    },
+    {
+      name: "Backend Development",
+      description:
+        "Building servers, APIs, databases, and application logic.",
+    },
+    {
+      name: "Frontend Development",
+      description:
+        "Building user interfaces and interactive web experiences.",
+    },
+    {
+      name: "Artificial Intelligence",
+      description:
+        "Building intelligent systems using machine learning and AI.",
+    },
+    {
+      name: "Data Science",
+      description:
+        "Analyzing data to discover insights and build data-driven solutions.",
+    },
+    {
+      name: "Problem Solving",
+      description:
+        "Solving logical and computational problems using algorithms.",
+    },
+  ];
 
-for (const interest of interests) {
-  await prisma.interest.upsert({
-    where: {
-      name: interest.name,
+  for (const interest of interests) {
+    await prisma.interest.upsert({
+      where: {
+        name: interest.name,
+      },
+      update: {
+        description: interest.description,
+      },
+      create: interest,
+    });
+  }
+
+  // =========================
+  // 5. CONNECT CAREERS
+  //    WITH INTERESTS
+  // =========================
+
+  const careerInterests = [
+    {
+      career: "AI/ML Engineer",
+      interest: "Artificial Intelligence",
+      importance: 5,
     },
-    update: {
-      description: interest.description,
+    {
+      career: "AI/ML Engineer",
+      interest: "Data Science",
+      importance: 4,
     },
-    create: interest,
-  });
-}
+    {
+      career: "Backend Developer",
+      interest: "Backend Development",
+      importance: 5,
+    },
+    {
+      career: "Backend Developer",
+      interest: "Web Development",
+      importance: 3,
+    },
+    {
+      career: "Frontend Developer",
+      interest: "Frontend Development",
+      importance: 5,
+    },
+    {
+      career: "Frontend Developer",
+      interest: "Web Development",
+      importance: 5,
+    },
+    {
+      career: "Full Stack Developer",
+      interest: "Web Development",
+      importance: 5,
+    },
+    {
+      career: "Full Stack Developer",
+      interest: "Frontend Development",
+      importance: 4,
+    },
+    {
+      career: "Full Stack Developer",
+      interest: "Backend Development",
+      importance: 4,
+    },
+  ];
+
+  for (const item of careerInterests) {
+    const career = await prisma.career.findUnique({
+      where: {
+        name: item.career,
+      },
+    });
+
+    const interest = await prisma.interest.findUnique({
+      where: {
+        name: item.interest,
+      },
+    });
+
+    if (!career || !interest) continue;
+
+    await prisma.careerInterest.upsert({
+      where: {
+        careerId_interestId: {
+          careerId: career.id,
+          interestId: interest.id,
+        },
+      },
+      update: {
+        importance: item.importance,
+      },
+      create: {
+        careerId: career.id,
+        interestId: interest.id,
+        importance: item.importance,
+      },
+    });
+  }
+
+  // =========================
+  // SUCCESS LOGS
+  // =========================
+
   console.log("Skills seeded successfully 🚀");
   console.log("Careers seeded successfully 🚀");
   console.log("Career-skill relationships seeded successfully 🚀");
   console.log("Interests seeded successfully 🚀");
+  console.log("Career interests seeded successfully 🚀");
 }
 
 main()

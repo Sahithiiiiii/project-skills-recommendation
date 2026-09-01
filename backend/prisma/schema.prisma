@@ -49,7 +49,8 @@ model Interest {
   name        String  @unique
   description String?
 
-  users UserInterest[]
+  users   UserInterest[]
+  careers CareerInterest[]
 }
 
 model UserInterest {
@@ -68,7 +69,8 @@ model Career {
   description String?
   category    String?
 
-  skills CareerSkill[]
+  skills    CareerSkill[]
+  interests CareerInterest[]
 }
 
 model CareerSkill {
@@ -120,4 +122,14 @@ model ProjectTeachesSkill {
   skill   Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
   @@id([projectId, skillId])
+}
+model CareerInterest {
+  careerId   String
+  interestId String
+  importance Int @default(3)
+
+  career   Career   @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([careerId, interestId])
 }
