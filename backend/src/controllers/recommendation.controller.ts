@@ -6,25 +6,34 @@ export const getRecommendations = async (
   res: Response
 ) => {
   try {
-    const { skills, interests } = req.body;
+    const userId = req.userId;
 
-    // =========================
-    // 1. VALIDATE INPUT
-    // =========================
-
-    if (!skills || !Array.isArray(skills)) {
-      return res.status(400).json({
+    if (!userId) {
+      return res.status(401).json({
         success: false,
-        message: "Please provide an array of skills",
+        message: "Authentication required",
       });
     }
 
-    if (interests && !Array.isArray(interests)) {
-      return res.status(400).json({
-        success: false,
-        message: "Interests must be an array",
-      });
-    }
+    // =========================
+    // 1. FETCH USER SKILLS AND INTERESTS
+    // =========================
+
+    const [userSkillsData, userInterestsData] = await Promise.all([
+      prisma.userSkill.findMany({
+        where: { userId },
+        include: { skill: true },
+      }),
+      prisma.userInterest.findMany({
+        where: { userId },
+        include: { interest: true },
+      }),
+    ]);
+
+    const skills = userSkillsData.map((userSkill) => userSkill.skill.name);
+    const interests = userInterestsData.map(
+      (userInterest) => userInterest.interest.name
+    );
 
     // =========================
     // 2. FETCH CAREERS
@@ -48,7 +57,7 @@ export const getRecommendations = async (
     });
 
     // =========================
-    // 3. NORMALIZE USER INPUT
+    // 3. NORMALIZE USER SKILLS AND INTERESTS
     // =========================
 
     const userSkills = skills.map((skill: string) =>
