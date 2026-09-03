@@ -91,3 +91,98 @@ export const addUserSkills = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const addUserInterests = async (req: Request, res: Response) => {
+  try {
+    const { interests } = req.body;
+
+    if (!Array.isArray(interests)) {
+      return res.status(400).json({
+        success: false,
+        message: "Interests must be an array",
+      });
+    }
+
+    if (
+      !interests.every(
+        (interest): interest is string => typeof interest === "string"
+      )
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Each interest must be a name",
+      });
+    }
+
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
+      });
+    }
+
+    const interestNames = [
+      ...new Set(interests.map((interest) => interest.trim())),
+    ];
+
+    if (interestNames.some((interest) => interest.length === 0)) {
+      return res.status(400).json({
+        success: false,
+        message: "Interest names cannot be empty",
+      });
+    }
+
+    const matchingInterests = await prisma.interest.findMany({
+      where: {
+        name: {
+          in: interestNames,
+        },
+      },
+    });
+
+    const matchingInterestNames = new Set(
+      matchingInterests.map((interest) => interest.name)
+    );
+    const invalidInterestNames = interestNames.filter(
+      (interestName) => !matchingInterestNames.has(interestName)
+    );
+
+    if (invalidInterestNames.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "One or more interests were not found",
+        invalidInterests: invalidInterestNames,
+      });
+    }
+
+    await prisma.userInterest.createMany({
+      data: matchingInterests.map((interest) => ({
+        userId,
+        interestId: interest.id,
+      })),
+      skipDuplicates: true,
+    });
+
+    const selectedInterests = await prisma.userInterest.findMany({
+      where: { userId },
+      include: { interest: true },
+    });
+
+    return res.status(201).json({
+      success: true,
+      interests: selectedInterests.map(({ interest }) => ({
+        id: interest.id,
+        name: interest.name,
+      })),
+    });
+  } catch (error) {
+    console.error("Error adding user interests:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to add user interests",
+    });
+  }
+};
