@@ -3,19 +3,18 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import {
   addUserInterests,
   addUserSkills,
+  getUserProfile,
+  updateUserInterests,
+  updateUserSkills,
 } from "../controllers/user.controller.js";
 
 const router = Router();
 
 router.post("/skills", authenticate, addUserSkills);
 router.post("/interests", authenticate, addUserInterests);
+router.put("/skills", authenticate, updateUserSkills);
+router.put("/interests", authenticate, updateUserInterests);
 
-router.get("/profile", authenticate, (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: "You are authenticated!",
-    userId: req.userId,
-  });
-});
+router.get("/profile", authenticate, getUserProfile);
 
 export default router;
