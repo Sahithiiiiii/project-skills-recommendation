@@ -78,6 +78,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .status-match, .status-missing { font-family: "DM Mono", monospace; font-size: 10px; }.status-match { color: var(--green); }.status-missing { color: var(--orange); }
 .roadmap-section { margin-top: 18px; }.roadmap-section .section-title { align-items: center; }.roadmap-section h2 { font-size: 26px; margin: 8px 0 0; }
 .roadmap-list { display: grid; gap: 0; }.roadmap-step { align-items: start; border-top: 1px solid var(--line); display: grid; gap: 22px; grid-template-columns: 46px 1fr; padding: 20px 0; }.roadmap-step h3 { font-size: 17px; margin: 0; }.roadmap-step p { font-size: 13px; margin: 5px 0 0; }
+.projects-section { margin-top: 55px; }.projects-section h2 { font-size: 26px; margin: 8px 0 0; }.project-grid { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); }.project-card { display: flex; flex-direction: column; min-height: 245px; }.project-card h3 { font-size: 19px; margin: 0; }.project-card-header { align-items: start; display: flex; gap: 16px; justify-content: space-between; }.project-difficulty { color: var(--orange); font-family: "DM Mono", monospace; font-size: 10px; white-space: nowrap; }.project-card > .muted { font-size: 13px; margin: 18px 0 25px; }.project-outcome { border-top: 1px solid var(--line); margin-top: auto; padding-top: 17px; }.project-outcome p:last-child { color: var(--ink); font-size: 13px; line-height: 1.55; margin: 7px 0 0; }
 .setup-page { max-width: 1020px; }
 .setup-section { margin-bottom: 18px; }
 .setup-section h2 { font-size: 24px; margin: 8px 0 0; }
@@ -92,5 +93,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .content-page { padding: 44px 20px 65px; }.page-heading, .career-hero { align-items: start; flex-direction: column; margin-bottom: 34px; }.page-heading h1 { letter-spacing: -1px; }
   .profile-grid, .analysis-grid { grid-template-columns: 1fr; }.recommendation-card { align-items: start; grid-template-columns: 34px 1fr; }.recommendation-card .button-secondary { grid-column: 2; justify-self: start; }
   .split-details { grid-template-columns: 1fr; }.score-block { border-left: 0; border-top: 1px solid var(--line); padding: 18px 0 0; width: 100%; }.auth-panel { padding: 34px 25px; }
+  .project-grid { grid-template-columns: 1fr; }
   .selection-grid { grid-template-columns: 1fr 1fr; }.setup-actions { align-items: stretch; flex-direction: column; gap: 16px; }
 }

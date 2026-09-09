@@ -1,5 +1,6 @@
 import type {
   CareerDetailsResponse,
+  CareerProjectsResponse,
   CareerRoadmapResponse,
   CareersResponse,
   LoginResponse,
@@ -106,6 +107,13 @@ export const getCareerDetails = (token: string, careerId: string) =>
 export const getCareerRoadmap = (token: string, careerId: string) =>
   request<CareerRoadmapResponse>(
     `/api/careers/${careerId}/roadmap`,
+    {},
+    token
+  );
+
+export const getCareerProjects = (token: string, careerId: string) =>
+  request<CareerProjectsResponse>(
+    `/api/careers/${careerId}/projects`,
     {},
     token
   );

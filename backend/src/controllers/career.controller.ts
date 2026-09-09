@@ -212,6 +212,45 @@ export const getCareerDetails = async (req: Request, res: Response) => {
   }
 };
 
+export const getCareerProjects = async (req: Request, res: Response) => {
+  try {
+    const careerIdParam = req.params.careerId;
+    const careerId = Array.isArray(careerIdParam) ? undefined : careerIdParam;
+
+    if (!careerId || !isValidCareerId(careerId)) {
+      return res.status(400).json({ success: false, message: "A valid career ID is required" });
+    }
+
+    const career = await prisma.career.findUnique({
+      where: { id: careerId },
+      select: { id: true },
+    });
+
+    if (!career) {
+      return res.status(404).json({ success: false, message: "Career not found" });
+    }
+
+    const projects = await prisma.careerProject.findMany({
+      where: { careerId },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        difficulty: true,
+        learningOutcome: true,
+        careerId: true,
+        createdAt: true,
+      },
+    });
+
+    return res.status(200).json({ success: true, count: projects.length, data: projects });
+  } catch (error) {
+    console.error("Error fetching career projects:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch career projects" });
+  }
+};
+
 export const getCareerRoadmap = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;

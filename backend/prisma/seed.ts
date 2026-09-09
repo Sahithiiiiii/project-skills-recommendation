@@ -135,7 +135,55 @@ async function main() {
   }
 
   // =========================
-  // 3. CONNECT CAREERS
+  // 3. SEED CAREER PROJECTS
+  // =========================
+
+  const careerProjects: Record<
+    string,
+    Array<{
+      title: string;
+      description: string;
+      difficulty: string;
+      learningOutcome: string;
+    }>
+  > = {
+    "Backend Developer": [
+      { title: "Task Management API", description: "Build a REST API for teams to create, assign, and track tasks.", difficulty: "Beginner", learningOutcome: "Practice API design, authentication, validation, and PostgreSQL persistence." },
+      { title: "URL Shortener Service", description: "Create a service that generates short links and tracks redirect activity.", difficulty: "Intermediate", learningOutcome: "Learn database indexing, analytics endpoints, and reliable error handling." },
+      { title: "Real-Time Support Chat", description: "Develop a customer support backend with agent queues and live conversations.", difficulty: "Advanced", learningOutcome: "Understand WebSockets, message persistence, and scalable backend architecture." },
+    ],
+    "Frontend Developer": [
+      { title: "Accessible Design System", description: "Build a reusable component library for a small product dashboard.", difficulty: "Beginner", learningOutcome: "Practice component composition, responsive styling, and accessible interactions." },
+      { title: "Interactive Data Dashboard", description: "Turn a dataset into a filterable dashboard with charts and responsive views.", difficulty: "Intermediate", learningOutcome: "Learn state management, data visualization, loading states, and performance basics." },
+      { title: "Collaborative Whiteboard", description: "Create a browser-based canvas where users can draw, annotate, and organize ideas.", difficulty: "Advanced", learningOutcome: "Explore canvas interactions, keyboard accessibility, and complex client-side state." },
+    ],
+    "Full Stack Developer": [
+      { title: "Event Planning Platform", description: "Build a platform for creating events, managing guests, and publishing schedules.", difficulty: "Intermediate", learningOutcome: "Connect a React interface to a secure API and relational data model." },
+      { title: "Subscription Billing Portal", description: "Create an account portal that shows plans, invoices, and subscription status.", difficulty: "Advanced", learningOutcome: "Practice authorization, transactional workflows, and dependable integration boundaries." },
+      { title: "Community Knowledge Base", description: "Develop a searchable space where users publish, edit, and discuss technical articles.", difficulty: "Advanced", learningOutcome: "Learn full-stack search, moderation workflows, and optimistic user experiences." },
+    ],
+    "AI/ML Engineer": [
+      { title: "Customer Churn Predictor", description: "Train a model that identifies customers who may cancel a service subscription.", difficulty: "Intermediate", learningOutcome: "Practice feature engineering, model evaluation, and communicating model limitations." },
+      { title: "Document Classification API", description: "Build a service that classifies uploaded documents into configurable categories.", difficulty: "Intermediate", learningOutcome: "Learn text preprocessing, model serving, and integrating inference into an API." },
+      { title: "Personalized Recommendation Engine", description: "Create a recommendation pipeline that suggests content from user interaction history.", difficulty: "Advanced", learningOutcome: "Understand ranking approaches, offline evaluation, and production data pipelines." },
+    ],
+  };
+
+  for (const [careerName, projects] of Object.entries(careerProjects)) {
+    const career = await prisma.career.findUnique({ where: { name: careerName } });
+    if (!career) continue;
+
+    for (const project of projects) {
+      await prisma.careerProject.upsert({
+        where: { careerId_title: { careerId: career.id, title: project.title } },
+        update: project,
+        create: { ...project, careerId: career.id },
+      });
+    }
+  }
+
+  // =========================
+  // 4. CONNECT CAREERS
   //    WITH REQUIRED SKILLS
   // =========================
 
@@ -214,7 +262,7 @@ async function main() {
   }
 
   // =========================
-  // 4. SEED INTERESTS
+  // 5. SEED INTERESTS
   // =========================
 
   const interests = [
@@ -263,7 +311,7 @@ async function main() {
   }
 
   // =========================
-  // 5. CONNECT CAREERS
+  // 6. CONNECT CAREERS
   //    WITH INTERESTS
   // =========================
 
@@ -354,6 +402,7 @@ async function main() {
 
   console.log("Skills seeded successfully 🚀");
   console.log("Careers seeded successfully 🚀");
+  console.log("Career projects seeded successfully 🚀");
   console.log("Career-skill relationships seeded successfully 🚀");
   console.log("Interests seeded successfully 🚀");
   console.log("Career interests seeded successfully 🚀");

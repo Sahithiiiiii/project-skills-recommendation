@@ -20,15 +20,15 @@ model User {
 }
 
 model Skill {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   category    String?
   description String?
 
   users           UserSkill[]
   careerSkills    CareerSkill[]
-  prerequisites   SkillPrerequisite[] @relation("SkillPrerequisites")
-  requiredFor     SkillPrerequisite[] @relation("RequiredSkill")
+  prerequisites   SkillPrerequisite[]    @relation("SkillPrerequisites")
+  requiredFor     SkillPrerequisite[]    @relation("RequiredSkill")
   projectRequired ProjectRequiredSkill[]
   projectTeaches  ProjectTeachesSkill[]
 }
@@ -71,6 +71,21 @@ model Career {
 
   skills    CareerSkill[]
   interests CareerInterest[]
+  projects  CareerProject[]
+}
+
+model CareerProject {
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  difficulty      String
+  learningOutcome String
+  careerId        String
+  createdAt       DateTime @default(now())
+
+  career Career @relation(fields: [careerId], references: [id], onDelete: Cascade)
+
+  @@unique([careerId, title])
 }
 
 model CareerSkill {
@@ -88,7 +103,7 @@ model SkillPrerequisite {
   skillId             String
   prerequisiteSkillId String
 
-  skill Skill @relation("SkillPrerequisites", fields: [skillId], references: [id], onDelete: Cascade)
+  skill        Skill @relation("SkillPrerequisites", fields: [skillId], references: [id], onDelete: Cascade)
   prerequisite Skill @relation("RequiredSkill", fields: [prerequisiteSkillId], references: [id], onDelete: Cascade)
 
   @@id([skillId, prerequisiteSkillId])
@@ -123,10 +138,11 @@ model ProjectTeachesSkill {
 
   @@id([projectId, skillId])
 }
+
 model CareerInterest {
   careerId   String
   interestId String
-  importance Int @default(3)
+  importance Int    @default(3)
 
   career   Career   @relation(fields: [careerId], references: [id], onDelete: Cascade)
   interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)

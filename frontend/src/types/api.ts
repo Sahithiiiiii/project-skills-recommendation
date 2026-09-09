@@ -136,3 +136,19 @@ export interface CareerRoadmapResponse {
   roadmap: RoadmapStep[];
   message: string;
 }
+
+export interface CareerProject {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  learningOutcome: string;
+  careerId: string;
+  createdAt: string;
+}
+
+export interface CareerProjectsResponse {
+  success: true;
+  count: number;
+  data: CareerProject[];
+}
