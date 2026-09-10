@@ -152,3 +152,8 @@ export interface CareerProjectsResponse {
   count: number;
   data: CareerProject[];
 }
+
+export interface ChatResponse {
+  success: true;
+  reply: string;
+}

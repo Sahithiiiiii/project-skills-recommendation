@@ -4,6 +4,7 @@ import careerRoutes from "./routes/career.routes.js";
 import recommendationRoutes from "./routes/recommendation.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
 const app = express();
 
 app.use(express.json());
@@ -21,4 +22,5 @@ app.use("/api/careers", careerRoutes);
 app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 export default app;

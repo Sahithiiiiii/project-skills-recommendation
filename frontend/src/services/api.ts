@@ -3,6 +3,7 @@ import type {
   CareerProjectsResponse,
   CareerRoadmapResponse,
   CareersResponse,
+  ChatResponse,
   LoginResponse,
   RecommendationsResponse,
   RegisterResponse,
@@ -15,8 +16,11 @@ import type {
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
   (import.meta.env.DEV ? "" : "http://localhost:5000");
+const CHAT_API_BASE_URL =
+  import.meta.env.VITE_CHAT_API_URL ??
+  (import.meta.env.DEV ? "" : "http://localhost:5000");
 
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
 
   constructor(message: string, status: number) {
@@ -42,7 +46,8 @@ const getErrorMessage = (payload: unknown) => {
 const request = async <T>(
   path: string,
   options: RequestInit = {},
-  token?: string
+  token?: string,
+  baseUrl = API_BASE_URL
 ): Promise<T> => {
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
@@ -51,7 +56,7 @@ const request = async <T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers,
   });
@@ -117,3 +122,17 @@ export const getCareerProjects = (token: string, careerId: string) =>
     {},
     token
   );
+
+export const sendChatMessage = (token: string, message: string) =>
+  request<ChatResponse>(
+    "/api/chat",
+    { method: "POST", body: JSON.stringify({ message }) },
+    token,
+    CHAT_API_BASE_URL
+  ).then((response) => {
+    if (response.success !== true || typeof response.reply !== "string") {
+      throw new Error("The chatbot returned an invalid response.");
+    }
+
+    return response;
+  });
